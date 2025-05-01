@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>스터디 달력</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      margin: auto;
+    }
+    td, th {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 100px;
+      height: 70px;
+      text-align: center;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .friday {
+      background-color: #fff8dc;
+    }
+  </style>
+</head>
+<body>
+  <h2 align="center">📅 스터디 달력 자동 생성기</h2>
+  <div align="center">
+    <label>년도:
+      <input type="number" id="year" value="2025">
+    </label>
+    <label>월:
+      <input type="number" id="month" value="5">
+    </label>
+    <button onclick="generateCalendar()">달력 생성</button>
+  </div>
+
+  <div id="calendar" style="margin-top: 20px;"></div>
+
+  <script>
+    const members = ["양재원", "윤승주", "봉혜린", "임유나"];
+
+    function generateCalendar() {
+      const year = parseInt(document.getElementById("year").value);
+      const month = parseInt(document.getElementById("month").value) - 1;
+
+      const firstDay = new Date(year, month, 1).getDay(); // 0=일 ~ 6=토
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const weeks = [];
+      let week = new Array(7).fill("");
+
+      let date = 1;
+      for (let i = 0; i < firstDay; i++) week[i] = "";
+
+      for (let i = firstDay; i < 7; i++) {
+        week[i] = date++;
+      }
+      weeks.push(week);
+
+      while (date <= lastDate) {
+        let week = new Array(7).fill("");
+        for (let i = 0; i < 7 && date <= lastDate; i++) {
+          week[i] = date++;
+        }
+        weeks.push(week);
+      }
+
+      let calendarHtml = `
+        <table>
+          <thead>
+            <tr><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th><th>일</th></tr>
+          </thead>
+          <tbody>
+      `;
+
+      let fridayIndex = 0;
+      for (let w = 0; w < weeks.length; w++) {
+        calendarHtml += "<tr>";
+        for (let d = 0; d < 7; d++) {
+          const day = weeks[w][d];
+          if (day === "") {
+            calendarHtml += "<td></td>";
+          } else if (d === 4) {  // 금요일
+            let name;
+            if (fridayIndex < 4) {
+              name = members[fridayIndex];
+            } else {
+              name = members[Math.floor(Math.random() * members.length)] + " (랜덤)";
+            }
+            fridayIndex++;
+            calendarHtml += `<td class="friday"><strong>${day}</strong><br/><small>${name}</small></td>`;
+          } else {
+            calendarHtml += `<td>${day}</td>`;
+          }
+        }
+        calendarHtml += "</tr>";
+      }
+
+      calendarHtml += "</tbody></table>";
+      document.getElementById("calendar").innerHTML = calendarHtml;
+    }
+
+    window.onload = generateCalendar;
+  </script>
+</body>
+</html>
